@@ -6,6 +6,8 @@ import {
   selectSubscriptionsBeingFetched,
   selectIsFetchingSubscriptions,
   selectNotifications,
+  selectUnreadSubscriptions,
+  selectReadSubscriptions
 } from 'redux/selectors/subscriptions';
 import { setSubscriptionNotifications, doFetchMySubscriptions } from 'redux/actions/subscriptions';
 import { doSetClientSetting } from 'redux/actions/settings';
@@ -17,9 +19,12 @@ const select = state => ({
     selectIsFetchingSubscriptions(state) ||
     Boolean(Object.keys(selectSubscriptionsBeingFetched(state)).length),
   subscriptions: selectSubscriptions(state),
-  subscriptionClaims: selectSubscriptionClaims(state),
-  notifications: selectNotifications(state),
+  // subscriptionClaims: selectSubscriptionClaims(state),
+  // notifications: selectNotifications(state),
   autoDownload: makeSelectClientSetting(settings.AUTO_DOWNLOAD)(state),
+  allSubscriptions: selectSubscriptionClaims(state),
+  subscriptionsLessUnread: selectReadSubscriptions(state),
+  unreadSubscriptions: selectUnreadSubscriptions(state),
 });
 
 export default connect(

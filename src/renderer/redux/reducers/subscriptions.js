@@ -4,86 +4,10 @@ import * as NOTIFICATION_TYPES from 'constants/notification_types';
 import { handleActions } from 'util/redux-utils';
 import type { Subscription } from 'types/subscription';
 
-export type NotificationType =
-  | NOTIFICATION_TYPES.DOWNLOADING
-  | NOTIFICATION_TYPES.DOWNLOADED
-  | NOTIFICATION_TYPES.NOTIFY_ONLY;
-
-export type SubscriptionNotifications = {
-  [string]: {
-    subscription: Subscription,
-    type: NotificationType,
-  },
-};
-
-// Subscription redux types
-export type SubscriptionState = {
-  subscriptions: Array<Subscription>,
-  notifications: SubscriptionNotifications,
-  loading: boolean,
-};
-
-// Subscription action types
-type doChannelSubscribe = {
-  type: ACTIONS.CHANNEL_SUBSCRIBE,
-  data: Subscription,
-};
-
-type doChannelUnsubscribe = {
-  type: ACTIONS.CHANNEL_UNSUBSCRIBE,
-  data: Subscription,
-};
-
-type setSubscriptionLatest = {
-  type: ACTIONS.SET_SUBSCRIPTION_LATEST,
-  data: {
-    subscription: Subscription,
-    uri: string,
-  },
-};
-
-type setSubscriptionNotification = {
-  type: ACTIONS.SET_SUBSCRIPTION_NOTIFICATION,
-  data: {
-    subscription: Subscription,
-    uri: string,
-    type: NotificationType,
-  },
-};
-
-type setSubscriptionNotifications = {
-  type: ACTIONS.SET_SUBSCRIPTION_NOTIFICATIONS,
-  data: {
-    notifications: SubscriptionNotifications,
-  },
-};
-
-type CheckSubscriptionStarted = {
-  type: ACTIONS.CHECK_SUBSCRIPTION_STARTED,
-};
-
-type CheckSubscriptionCompleted = {
-  type: ACTIONS.CHECK_SUBSCRIPTION_COMPLETED,
-};
-
-type fetchedSubscriptionsSucess = {
-  type: ACTIONS.FETCH_SUBSCRIPTIONS_SUCCESS,
-  data: Array<Subscription>,
-};
-
-export type Action =
-  | doChannelSubscribe
-  | doChannelUnsubscribe
-  | setSubscriptionLatest
-  | setSubscriptionNotification
-  | CheckSubscriptionStarted
-  | CheckSubscriptionCompleted
-  | Function;
-export type Dispatch = (action: Action) => any;
 
 const defaultState = {
   subscriptions: [],
-  notifications: {},
+  unread: {},
   loading: false,
 };
 
@@ -129,22 +53,28 @@ export default handleActions(
             : subscription
       ),
     }),
-    [ACTIONS.SET_SUBSCRIPTION_NOTIFICATION]: (
+    [ACTIONS.SET_SUBSCRIPTION_UNREADS]: (
       state: SubscriptionState,
-      action: setSubscriptionNotification
-    ): SubscriptionState => ({
-      ...state,
-      notifications: {
-        ...state.notifications,
-        [action.data.uri]: { subscription: action.data.subscription, type: action.data.type },
-      },
-    }),
-    [ACTIONS.SET_SUBSCRIPTION_NOTIFICATIONS]: (
+      action: setSubscriptionNotifications
+    ): SubscriptionState => {
+      const { channel, unreadUris } = action.data;
+      const currentUnreadUris = state.unread[channel] || [];
+      const newUnreads = unreadUris.filter(uri => !currentUnreadUris.includes(uri)).concat(currentUnreadUris)
+
+      return {
+        ...state,
+        unread: {
+          ...state.unread,
+          [channel]: newUnreads
+        }
+      }
+    },
+    [ACTIONS.CLEAR_SUBSCRIPTION_UNREADS]: (
       state: SubscriptionState,
       action: setSubscriptionNotifications
     ): SubscriptionState => ({
       ...state,
-      notifications: action.data.notifications,
+      unread: action.data.unread
     }),
     [ACTIONS.FETCH_SUBSCRIPTIONS_START]: (state: SubscriptionState): SubscriptionState => ({
       ...state,

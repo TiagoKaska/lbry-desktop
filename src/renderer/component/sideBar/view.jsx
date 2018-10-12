@@ -17,15 +17,13 @@ type Props = {
     primary: Array<SideBarLink>,
     secondary: Array<SideBarLink>,
   },
-  notifications: {
-    type: string,
-  },
+  notificationAmount: number,
 };
 
 const SideBar = (props: Props) => {
-  const { navLinks, notifications } = props;
+  const { navLinks, notificationAmount } = props;
 
-  const badges = Object.keys(notifications).length;
+
 
   return (
     <nav className="nav">
@@ -40,7 +38,7 @@ const SideBar = (props: Props) => {
             >
               <Button
                 navigate={path}
-                label={path === '/subscriptions' && badges ? `${label} (${badges})` : label}
+                label={path === '/subscriptions' && notificationAmount ? `${label} (${notificationAmount})` : label}
                 icon={icon}
               />
             </li>

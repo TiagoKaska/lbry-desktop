@@ -73,7 +73,11 @@ class FilePage extends React.Component<Props> {
   }
 
   componentDidMount() {
-    const { uri, fileInfo, fetchFileInfo, fetchCostInfo, setViewed } = this.props;
+    const { uri, fileInfo, fetchFileInfo, fetchCostInfo, setViewed, isSubscribed } = this.props;
+
+    if (isSubscribed) {
+      this.removeFromSubscriptionNotifications();
+    }
 
     if (fileInfo === undefined) {
       fetchFileInfo(uri);
@@ -82,7 +86,7 @@ class FilePage extends React.Component<Props> {
     // See https://github.com/lbryio/lbry-desktop/pull/1563 for discussion
     fetchCostInfo(uri);
 
-    this.checkSubscription(this.props);
+    // this.checkSubscription(this.props);
 
     setViewed(uri);
   }
@@ -102,19 +106,33 @@ class FilePage extends React.Component<Props> {
     this.props.setClientSetting(settings.AUTOPLAY, event.target.checked);
   }
 
-  checkSubscription = (props: Props) => {
-    if (props.subscriptions.find(sub => sub.channelName === props.claim.channel_name)) {
-      props.checkSubscription(
-        buildURI(
-          {
-            contentName: props.claim.channel_name,
-            claimId: props.claim.value.publisherSignature.certificateId,
-          },
-          false
-        )
-      );
+  // checkSubscription = (props: Props) => {
+  //   if (props.subscriptions.find(sub => sub.channelName === props.claim.channel_name)) {
+  //     props.checkSubscription(
+  //       buildURI(
+  //         {
+  //           contentName: props.claim.channel_name,
+  //           claimId: props.claim.value.publisherSignature.certificateId,
+  //         },
+  //         false
+  //       )
+  //     );
+  //   }
+  // };
+
+  componentDidUpdate(prevProps) {
+    if (!prevProps.isSubscribed && this.props.isSubscribed) {
+      this.removeFromSubscriptionNotifications();
     }
-  };
+  }
+
+  removeFromSubscriptionNotifications() {
+    // Always try to remove
+    // If it doesn't exist, nothing will happen
+    // debugger;
+    const { removeSubscriptionNotifications, uri, channelUri } = this.props;
+    removeSubscriptionNotifications(channelUri, uri);
+  }
 
   render() {
     const {
@@ -131,6 +149,8 @@ class FilePage extends React.Component<Props> {
       costInfo,
       fileInfo,
       autoplay,
+      isSubscribed,
+      channelUri
     } = this.props;
 
     // File info
@@ -143,12 +163,7 @@ class FilePage extends React.Component<Props> {
     const mediaType = getMediaType(contentType, fileName);
     const showFile =
       PLAYABLE_MEDIA_TYPES.includes(mediaType) || PREVIEW_MEDIA_TYPES.includes(mediaType);
-    const channelClaimId =
-      value && value.publisherSignature && value.publisherSignature.certificateId;
-    let subscriptionUri;
-    if (channelName && channelClaimId) {
-      subscriptionUri = buildURI({ channelName, claimId: channelClaimId }, false);
-    }
+
     const speechShareable =
       costInfo &&
       costInfo.cost === 0 &&
@@ -214,7 +229,7 @@ class FilePage extends React.Component<Props> {
                     }}
                   />
                 ) : (
-                  <SubscribeButton uri={subscriptionUri} channelName={channelName} />
+                  <SubscribeButton uri={channelUri} channelName={channelName} />
                 )}
                 {!claimIsMine && (
                   <Button

@@ -7,6 +7,8 @@
   flex-direction: column;
   max-width: var(--card-max-width);
   white-space: normal;
+  position: relative;
+  overflow: hidden;
 
   .card__media {
     padding-top: var(--video-aspect-ratio);
@@ -25,6 +27,19 @@
   padding: $spacing-vertical;
   margin-top: $spacing-vertical * 2/3;
   box-shadow: var(--box-shadow-layer);
+}
+
+.card__badge {
+  content: "";
+  position: absolute;
+  bottom: -60px;
+  right: -55px;
+  height: 100px;
+  width: 100px;
+  background: #d84343;
+  z-index: -1000;
+  transform: rotate(45deg);
+  opacity: 0.5;
 }
 
 .card--small {

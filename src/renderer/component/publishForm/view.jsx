@@ -528,7 +528,7 @@ class PublishForm extends React.PureComponent<Props> {
                 step="any"
                 label={__('Deposit')}
                 postfix="LBC"
-                value={bid || ''}
+                value={bid}
                 error={bidError}
                 min="0"
                 disabled={!name}

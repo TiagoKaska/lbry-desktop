@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import store from 'store';
 import { remote } from 'electron';
 import Path from 'path';

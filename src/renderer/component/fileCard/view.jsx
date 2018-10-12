@@ -57,6 +57,7 @@ class FileCard extends React.PureComponent<Props> {
       claimIsMine,
       pending,
       isSubscribed,
+      isUnread,
     } = this.props;
 
     if (!claim && !pending) {
@@ -116,6 +117,7 @@ class FileCard extends React.PureComponent<Props> {
             {fileInfo && <Icon icon={icons.LOCAL} />}
           </div>
         </div>
+        {isUnread && <div className="card__badge" />}
       </section>
     );
     /* eslint-enable jsx-a11y/click-events-have-key-events */

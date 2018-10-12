@@ -3,10 +3,7 @@ import * as NOTIFICATION_TYPES from 'constants/notification_types';
 import { ipcRenderer } from 'electron';
 import { doAlertError } from 'redux/actions/app';
 import { doNavigate } from 'redux/actions/navigation';
-import {
-  setSubscriptionLatest,
-  setSubscriptionNotification,
-} from 'redux/actions/subscriptions';
+import { setSubscriptionLatest, setSubscriptionNotification } from 'redux/actions/subscriptions';
 import { selectNotifications } from 'redux/selectors/subscriptions';
 import { selectBadgeNumber } from 'redux/selectors/app';
 import {
@@ -292,7 +289,7 @@ export function doPurchaseUri(uri, specificCostInfo, shouldRecordViewEvent) {
 }
 
 export function doFetchClaimsByChannel(uri, page) {
-  return dispatch => {
+  return (dispatch, getState) => {
     dispatch({
       type: ACTIONS.FETCH_CHANNEL_CLAIMS_STARTED,
       data: { uri, page },

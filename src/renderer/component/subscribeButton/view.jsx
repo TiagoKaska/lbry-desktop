@@ -13,7 +13,7 @@ type SubscribtionArgs = {
 type Props = {
   channelName: ?string,
   uri: ?string,
-  subscriptions: Array<Subscription>,
+  isSubscribed: boolean,
   doChannelSubscribe: ({ channelName: string, uri: string }) => void,
   doChannelUnsubscribe: SubscribtionArgs => void,
   doNotify: ({ id: string }) => void,
@@ -23,14 +23,12 @@ export default (props: Props) => {
   const {
     channelName,
     uri,
-    subscriptions,
     doChannelSubscribe,
     doChannelUnsubscribe,
     doNotify,
+    subscriptions,
+    isSubscribed
   } = props;
-
-  const isSubscribed =
-    subscriptions.map(subscription => subscription.channelName).indexOf(channelName) !== -1;
 
   const subscriptionHandler = isSubscribed ? doChannelUnsubscribe : doChannelSubscribe;
   const subscriptionLabel = isSubscribed ? __('Unsubscribe') : __('Subscribe');
